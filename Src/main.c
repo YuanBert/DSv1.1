@@ -269,12 +269,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		//地感来车尝试5次发送 ，每隔20ms发送一次
 		if(1 == gADataCmdFlag)
 		{
-			gA9CmdTIM4Cnt++;
-			if(0 == gA9CmdTIM4Cnt%20)
+			if(0 == gA9CmdTIM4Cnt%500)
 			{
 				BSP_SendData2A9((uint8_t*)&gA9SendCmd,sizeof(gA9SendCmd),0xFFFF);
 			}
-			if(gA9CmdTIM4Cnt > 100)
+			gA9CmdTIM4Cnt++;
+			if(gA9CmdTIM4Cnt > 2500)
 			{
 				gA9CmdTIM4Cnt = 0;
 				gGentleSenseFlag = 0;
@@ -295,17 +295,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	{
 		if(1 == gAtmosphereFlag)
 		{
-			gAtomsphereTIMCnt++;
+			
 			if(0 == gAtomsphereTIMCnt % 50)
 			{
+				BSP_LED_OUT_ON();
 				BSP_ATMOSPHERELED1_ON();
 				BSP_ATMOSPHERELED2_TOGGLE();
-				BSP_ATMOSPHERELED1_TOGGLE();
 			}
+			gAtomsphereTIMCnt++;
 			
 		}
 		if(gAtomsphereTIMCnt > 5000)
 		{
+			
+			BSP_LED_OUT_OFF();
 			BSP_ATMOSPHERELED1_OFF();
 			BSP_ATMOSPHERELED2_OFF();
 			gAtomsphereTIMCnt = 0;
